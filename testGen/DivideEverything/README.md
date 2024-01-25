@@ -1,0 +1,1 @@
+Задача: https://admin.contest.yandex.ru/problems/5692301%2F2024_01_21%2FS1ByBhYfDr/settings
