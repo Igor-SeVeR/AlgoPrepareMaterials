@@ -1,0 +1,133 @@
+#include <iostream>
+#include <random>
+#include <fstream>
+#include <ctime>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <cstdio>
+
+using namespace std;
+
+string path_to_tests = "C:\\HSE\\Assist\\NOP\\tests\\";
+
+void findSolution() {
+    for (int s = 1; s <= 100; s++) {
+        string name = "";
+        if (s < 10)
+            name += "0";
+        name += to_string(s);
+        string path_to_read = path_to_tests + name;
+        cin.clear();
+        freopen(path_to_read.c_str(), "r", stdin);
+        string str1, str2;
+        cin >> str1 >> str2;
+        fclose(stdin);
+        vector<vector<int>> dp(str1.size() + 1, vector<int>(str2.size() + 1));
+        int n = str1.size();
+        int m = str2.size();
+        for (int i = 1; i <= n; ++i)
+            for (int j = 1; j <= m; ++j)
+                if (str1[i - 1] == str2[j - 1])
+                    dp[i][j] = dp[i - 1][j - 1] + 1;
+                else
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+        path_to_read += ".a";
+        freopen(path_to_read.c_str(), "w", stdout);
+        cout << dp[n][m];
+        fclose(stdout);
+    }
+}
+
+char generate_rand_letter() {
+    return 'A' + (rand() % 26);
+}
+
+void generateTests(int n, int start_num, int end_num, int propusk, int general) {
+    for (int i = start_num; i <= end_num - 2; i++) {
+        string path = "";
+        if (i < 10)
+            path += "0";
+        path += to_string(i);
+        string path_to_test = path_to_tests + path;
+        // Блок генерации
+        string str1 = "", str2 = "";
+        while (str1.size() < n && str2.size() < n) {
+            int prop1 = rand() % propusk;
+            int prop2 = rand() % propusk;
+            int gen = rand() % general;
+            string rand_main = "", rand_prop1 = "", rand_prop2 = "";
+            while (rand_main.size() < gen) {
+                rand_main += generate_rand_letter();
+            }
+            while (rand_prop1.size() < prop1) {
+                rand_prop1 += generate_rand_letter();
+            }
+            while (rand_prop2.size() < prop2) {
+                rand_prop2 += generate_rand_letter();
+            }
+            str1 += rand_prop1;
+            str2 += rand_prop2;
+            str1 += rand_main;
+            str2 += rand_main;
+        }
+        while (str1.size() < n) {
+            str1 += generate_rand_letter();
+        }
+        while (str2.size() < n) {
+            str2 += generate_rand_letter();
+        }
+        str1 = str1.substr(0, n - (rand() % propusk));
+        str2 = str2.substr(0, n - (rand() % propusk));
+        // Блок проверки
+        if (str1.size() > n)
+            cout << "ALLERT" << ' ' << path_to_test << '\n';
+        if (str2.size() > n)
+            cout << "ALLERT" << ' ' << path_to_test << '\n';
+        for (int i = 0; i < str1.size(); i++)
+            if (!(str1[i] >= 'A' && str1[i] <= 'Z'))
+                cout << "ALLERT" << ' ' << path_to_test << '\n';
+        for (int i = 0; i < str2.size(); i++)
+            if (!(str2[i] >= 'A' && str2[i] <= 'Z'))
+                cout << "ALLERT" << ' ' << path_to_test << '\n';
+        // Блок вывода
+        freopen(path_to_test.c_str(), "w", stdout);
+        cout << str1 << '\n';
+        cout << str2;
+        fclose(stdout);
+    }
+    // Генерация 2 с конца теста
+    string path_to_test = path_to_tests + to_string(end_num - 1);
+    string str1 = "", str2 = "";
+    for (int i = 0; i < n; i++) {
+        char kek = generate_rand_letter();
+        str1 += kek;
+        str2 += kek;
+    }
+    freopen(path_to_test.c_str(), "w", stdout);
+    cout << str1 << "\n";
+    cout << str2;
+    fclose(stdout);
+    // Генерация последнего теста
+    path_to_test = path_to_tests + to_string(end_num);
+    str1 = ""; str2 = "";
+    for (int i = 0; i < n; i++) {
+        str1 += 'A';
+        str2 += 'B';
+    }
+    freopen(path_to_test.c_str(), "w", stdout);
+    cout << str1 << "\n";
+    cout << str2;
+    fclose(stdout);
+}
+
+int main() {
+    srand(time(0));
+    generateTests(10, 3, 20, 2, 4);
+    generateTests(100, 21, 40, 7, 20);
+    generateTests(1000, 41, 60, 20, 100);
+    generateTests(2000, 61, 80, 50, 400);
+    generateTests(4000, 81, 100, 100, 1000);
+    findSolution();
+    return 0;
+}
